@@ -9,8 +9,8 @@ import { useOSStore } from '../os/store';
 const FolderGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
+  min-height: 100%;
   align-content: flex-start;
-  height: 100%;
   background: white; /* Folders typically have white backgrounds */
   padding: 10px;
   gap: 10px;
@@ -18,12 +18,11 @@ const FolderGrid = styled.div`
 
 const TextBuffer = styled.div`
   background: white;
-  height: 100%;
   padding: 10px;
+  min-height: 100%;
   font-family: 'Courier New', monospace;
   font-size: 14px;
   white-space: pre-wrap; /* Preserves newlines in your text files */
-  overflow-y: auto;
   user-select: text; /* Allow users to copy your text */
 `;
 

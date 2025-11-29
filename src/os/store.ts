@@ -24,6 +24,7 @@ interface OSState {
   toggleMaximize: (id: string) => void; // Add this
   focusWindow: (id: string) => void; // Handles Z-Index logic
   updateWindowPos: (id: string, x: number, y: number) => void;
+  updateWindowSize: (id: string, width: number, height: number) => void; // New method
 }
 
 export const useOSStore = create<OSState>((set, get) => ({
@@ -100,6 +101,12 @@ export const useOSStore = create<OSState>((set, get) => ({
   updateWindowPos: (id, x, y) => set((state) => ({
     windows: state.windows.map((w) => 
       w.id === id ? { ...w, x, y } : w
+    )
+  })),
+
+  updateWindowSize: (id, width, height) => set((state) => ({
+    windows: state.windows.map((w) => 
+      w.id === id ? { ...w, width, height } : w
     )
   })),
 }));

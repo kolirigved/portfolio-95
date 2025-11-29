@@ -19,8 +19,8 @@ const Wrapper = styled.div`
 
 // CHANGED: This is now an img tag
 const StyledImg = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   margin-bottom: 4px;
   image-rendering: pixelated; /* Keeps it crisp */
 `;

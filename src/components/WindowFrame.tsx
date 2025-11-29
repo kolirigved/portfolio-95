@@ -1,6 +1,6 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Window, WindowHeader, WindowContent, Button, Panel } from 'react95';
+import { Window, WindowHeader, WindowContent, Button, Panel, ScrollView} from 'react95';
 import styled from 'styled-components';
 import { useOSStore } from '../os/store';
 import { getIcon } from '../assets/icons';
@@ -55,7 +55,8 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
     focusWindow, 
     minimizeWindow, 
     toggleMaximize, 
-    updateWindowPos 
+    updateWindowPos,
+    updateWindowSize
   } = useOSStore();
   
   const windowState = windows.find((w) => w.id === id);
@@ -82,11 +83,14 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
       disableDragging={isMaximized}
       enableResizing={!isMaximized}
       
-      onDragStop={(e, d) => {
+      onDragStop={(_, d) => {
         if (!isMaximized) updateWindowPos(id, d.x, d.y);
       }}
-      onResizeStop={(e, direction, ref, delta, position) => {
-        if (!isMaximized) updateWindowPos(id, position.x, position.y);
+      onResizeStop={(_, __, ref, ___, position) => {
+        if (!isMaximized) {
+          updateWindowPos(id, position.x, position.y);
+          updateWindowSize(id, ref.offsetWidth, ref.offsetHeight);
+        }
       }}
       onMouseDown={() => focusWindow(id)}
       style={{ zIndex: windowState.zIndex }}
@@ -146,11 +150,11 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
         </MenuBar>
 
         {/* 3. CONTENT AREA */}
-        <WindowContent style={{ flex: 1, overflow: 'auto', padding: '0' }}>
-            {/* We wrap children in a div with proper padding/bg for the inner content feel */}
-           <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <WindowContent style={{ flex: 1, overflow: 'hidden', padding: 0 }}>
+
+            <ScrollView style={{ width: '100%', height: '100%' }}>
               {children}
-           </div>
+            </ScrollView>
         </WindowContent>
 
       </Window>

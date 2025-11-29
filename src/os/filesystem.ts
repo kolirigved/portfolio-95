@@ -46,7 +46,7 @@ export const fileSystem: Record<string, Item> = {
     title: 'About Me.txt',
     type: 'txt',
     icon: 'notepad',
-    content: "Hi, I'm a developer building a Windows 95 portfolio..."
+    content: "Hi, I'm a developer building a Windows 95 portfolio... hnidjfiwdnjbivajnsdcjndcojndwcojsdncojsdnvojsndvojndvojawdnvojwdnvojwdvncodjwcnowdjcnowjcnwoejcnwojvnwqojvnqwojfqneovnaweovjanweovanweovajnweocanwevoanwcaojencoejnoejcnocq"
   },
   'projects': {
     id: 'projects',
