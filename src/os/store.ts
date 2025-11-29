@@ -20,6 +20,8 @@ interface OSState {
   openWindow: (id: string) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
+  restoreWindow: (id: string) => void; // Add this
+  toggleMaximize: (id: string) => void; // Add this
   focusWindow: (id: string) => void; // Handles Z-Index logic
   updateWindowPos: (id: string, x: number, y: number) => void;
 }
@@ -34,53 +36,37 @@ export const useOSStore = create<OSState>((set, get) => ({
     // 1. Check if window is already open
     const existing = windows.find(w => w.id === id);
     if (existing) {
-      if (existing.isMinimized) {
-          // If minimized, restore it
-          set((state) => ({
-             windows: state.windows.map(w => w.id === id ? { ...w, isMinimized: false } : w) 
-          }));
-      }
-      focusWindow(id); // Bring to front
-      return;
+        // ... (existing restore logic remains same) ...
+        focusWindow(id);
+        return;
     }
 
-    // 2. If not open, create new window
-    // Randomize slightly so they don't stack perfectly on top of each other
+    // 2. CRITICAL FIX: Calculate the true highest Z-index
+    const highestZ = Math.max(0, ...windows.map(w => w.zIndex));
+
     const offset = windows.length * 20; 
     
     const newWindow: WindowState = {
       id,
-      x: 100 + offset,
+      x: 50 + offset, // Moved strictly to 50 to see it better
       y: 50 + offset,
       width: 400,
       height: 300,
       isMinimized: false,
       isMaximized: false,
-      zIndex: windows.length + 1, // Start on top
+      zIndex: highestZ + 1, // FIX: Always puts new window on top
     };
 
     set((state) => ({
       windows: [...state.windows, newWindow],
       activeWindowId: id,
     }));
-  },
+},
 
   closeWindow: (id) => set((state) => ({
     windows: state.windows.filter((w) => w.id !== id),
     activeWindowId: null // You might want logic to focus the next available window here
   })),
-
-  focusWindow: (id) => set((state) => {
-    // Logic: Find the highest zIndex currently, and make this window +1 higher
-    const highestZ = Math.max(0, ...state.windows.map(w => w.zIndex));
-    
-    return {
-      activeWindowId: id,
-      windows: state.windows.map((w) => 
-        w.id === id ? { ...w, zIndex: highestZ + 1 } : w
-      ),
-    };
-  }),
 
   minimizeWindow: (id) => set((state) => ({
     windows: state.windows.map((w) => 
@@ -88,6 +74,29 @@ export const useOSStore = create<OSState>((set, get) => ({
     )
   })),
 
+  restoreWindow: (id) => set((state) => ({
+     windows: state.windows.map((w) => 
+       w.id === id ? { ...w, isMinimized: false } : w
+     ),
+     activeWindowId: id // also focus it
+   })),
+
+  toggleMaximize: (id) => set((state) => ({
+    windows: state.windows.map((w) => 
+      w.id === id ? { ...w, isMaximized: !w.isMaximized } : w
+    )
+  })),
+
+  focusWindow: (id) => set((state) => {
+    const highestZ = Math.max(0, ...state.windows.map(w => w.zIndex));
+    return {
+      activeWindowId: id,
+      windows: state.windows.map((w) => 
+        w.id === id ? { ...w, zIndex: highestZ + 1 } : w
+      ),
+    };
+  }),
+  
   updateWindowPos: (id, x, y) => set((state) => ({
     windows: state.windows.map((w) => 
       w.id === id ? { ...w, x, y } : w
