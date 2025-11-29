@@ -1,5 +1,4 @@
 // src/components/Desktop.tsx
-import React from 'react';
 import styled from 'styled-components';
 import { useOSStore } from '../os/store';
 import { fileSystem } from '../os/filesystem'; 

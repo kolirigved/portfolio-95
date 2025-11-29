@@ -1,6 +1,6 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Window, WindowHeader, WindowContent, Button, Panel, ScrollView} from 'react95';
+import { Window, WindowHeader, WindowContent, Button, ScrollView} from 'react95';
 import styled from 'styled-components';
 import { useOSStore } from '../os/store';
 import { getIcon } from '../assets/icons';
@@ -29,16 +29,6 @@ const MenuItem = styled.span`
     color: white;
     background: #000080;
   }
-`;
-
-const StatusBar = styled(Panel)`
-  padding: 4px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-top: 1px solid #dfdfdf;
-  margin-top: 2px;
 `;
 
 interface WindowFrameProps {

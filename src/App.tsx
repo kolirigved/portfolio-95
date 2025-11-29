@@ -1,5 +1,4 @@
 // src/App.tsx (Update)
-import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { styleReset } from 'react95';
 import original from 'react95/dist/themes/original';
