@@ -52,6 +52,8 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
   } = useOSStore();
   
   const windowState = windows.find((w) => w.id === id);
+  const itemMeta = fileSystem[id];
+  const showToolbar = itemMeta?.showToolbar !== false;
   if (!windowState) return null;
 
   // Handle Visibility (Hidden if minimized)
@@ -143,60 +145,62 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
         </WindowHeader>
 
         {/* 2. MENU BAR (File, Edit, View) */}
-        <MenuBar style={{ height: '24px', padding: '0 4px', display: 'flex', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <MenuItem><u>F</u>ile</MenuItem>
-            <MenuItem><u>E</u>dit</MenuItem>
-            <MenuItem><u>V</u>iew</MenuItem>
-            <MenuItem><u>H</u>elp</MenuItem>
-          </div>
+        {showToolbar && (
+          <MenuBar style={{ height: '24px', padding: '0 4px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <MenuItem><u>F</u>ile</MenuItem>
+              <MenuItem><u>E</u>dit</MenuItem>
+              <MenuItem><u>V</u>iew</MenuItem>
+              <MenuItem><u>H</u>elp</MenuItem>
+            </div>
 
-          {/* Right-side toolbar actions (Open in new tab for HTML/PDF/EXE) */}
-          {(() => {
-            const item = fileSystem[id];
-            if (!item) return null;
-            const hasExternal = !!item.src;
-            const actionable = ['pdf', 'exe', 'html'];
-            if (hasExternal && actionable.includes(item.type)) {
-              return (
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-                  {/* Open in new tab button (for html/pdf/exe) */}
-                  <Button
-                    size="sm"
-                    title="Open in New Tab"
-                    aria-label="Open in new tab"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (item.src) window.open(item.src, '_blank');
-                    }}
-                    style={{ height: '20px', padding: '0 6px', fontSize: 12, outline: 'none', boxShadow: 'none' }}
-                    onMouseDown={(e) => e.preventDefault()}
-                  >
-                    Open in New Tab
-                  </Button>
-
-                  {/* For PDFs, show a Download button (uses item.download if present, falls back to src) */}
-                  {item.type === 'pdf' && (
+            {/* Right-side toolbar actions (Open in new tab for HTML/PDF/EXE) */}
+            {(() => {
+              const item = itemMeta;
+              if (!item) return null;
+              const hasExternal = !!item.src;
+              const actionable = ['pdf', 'exe', 'html'];
+              if (hasExternal && actionable.includes(item.type)) {
+                return (
+                  <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {/* Open in new tab button (for html/pdf/exe) */}
                     <Button
                       size="sm"
-                      title="Download PDF"
+                      title="Open in New Tab"
+                      aria-label="Open in new tab"
                       onClick={(e) => {
                         e.stopPropagation();
-                        const url = item.download || item.src;
-                        if (url) window.open(url, '_blank');
+                        if (item.src) window.open(item.src, '_blank');
                       }}
                       style={{ height: '20px', padding: '0 6px', fontSize: 12, outline: 'none', boxShadow: 'none' }}
                       onMouseDown={(e) => e.preventDefault()}
                     >
-                      Download
+                      Open in New Tab
                     </Button>
-                  )}
-                </div>
-              );
-            }
-            return null;
-          })()}
-        </MenuBar>
+
+                    {/* For PDFs, show a Download button (uses item.download if present, falls back to src) */}
+                    {item.type === 'pdf' && (
+                      <Button
+                        size="sm"
+                        title="Download PDF"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = item.download || item.src;
+                          if (url) window.open(url, '_blank');
+                        }}
+                        style={{ height: '20px', padding: '0 6px', fontSize: 12, outline: 'none', boxShadow: 'none' }}
+                        onMouseDown={(e) => e.preventDefault()}
+                      >
+                        Download
+                      </Button>
+                    )}
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </MenuBar>
+        )}
 
         {/* 3. CONTENT AREA */}
         <WindowContent style={{ flex: 1, overflow: 'hidden', padding: 0 }}>

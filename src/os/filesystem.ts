@@ -1,6 +1,8 @@
 // src/os/filesystem.ts
+import project1Text from '../content/project_1.txt?raw';
+import aboutMeText from '../content/about_me.txt?raw';
 
-export type FileType = 'folder' | 'txt' | 'image' | 'exe' | 'pdf';
+export type FileType = 'folder' | 'txt' | 'image' | 'exe' | 'pdf' | 'app';
 
 export interface Item {
   id: string;
@@ -10,6 +12,8 @@ export interface Item {
   content?: string;
   src?: string;
   download?: string;
+  appId?: 'chess';
+  showToolbar?: boolean;
   children?: string[];
 }
 
@@ -19,7 +23,7 @@ export const fileSystem: Record<string, Item> = {
     title: 'Desktop',
     type: 'folder',
     icon: 'computer',
-    children: ['my_computer', 'recycle_bin', 'about_me', 'projects', 'portfolio_page', 'resume_pdf'] 
+    children: ['my_computer', 'recycle_bin', 'about_me', 'projects', 'portfolio_page', 'resume_pdf', 'chess_app'] 
   },
   'my_computer': {
     id: 'my_computer',
@@ -47,7 +51,7 @@ export const fileSystem: Record<string, Item> = {
     title: 'About Me.txt',
     type: 'txt',
     icon: 'notepad',
-    content: "Hi, I'm a developer building a Windows 95 portfolio... hnidjfiwdnjbivajnsdcjndcojndwcojsdncojsdnvojsndvojndvojawdnvojwdnvojwdvncodjwcnowdjcnowjcnwoejcnwojvnwqojvnqwojfqneovnaweovjanweovanweovajnweocanwevoanwcaojencoejnoejcnocq"
+    content: aboutMeText
   },
   'projects': {
     id: 'projects',
@@ -61,7 +65,7 @@ export const fileSystem: Record<string, Item> = {
     title: 'Portfolio Site',
     type: 'txt',
     icon: 'notepad',
-    content: "This represents the project you are building right now."
+    content: project1Text
   },
   'portfolio_page': {
     id: 'portfolio_page',
@@ -72,10 +76,19 @@ export const fileSystem: Record<string, Item> = {
   },
   'resume_pdf': {
     id: 'resume_pdf',
-    title: 'Resume.pdf',
+    title: 'Resume',
     type: 'pdf',
     icon: 'pdf',
     src: 'https://drive.google.com/file/d/1xd31v8XpVXb8iaIsaC03Y5oZ86_wwcWZ/preview',
     download: 'https://drive.google.com/uc?export=download&id=1xd31v8XpVXb8iaIsaC03Y5oZ86_wwcWZ'
+  },
+  'chess_app': {
+    id: 'chess_app',
+    title: 'Chess.exe',
+    type: 'app',
+    icon: 'chess',
+    appId: 'chess',
+    showToolbar: false
   }
+  
 };

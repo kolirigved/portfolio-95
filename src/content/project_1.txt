@@ -1,0 +1,20 @@
+PROJECT: Portfolio Site
+Version: 1.0.0
+
+This portfolio is built as a playful homage to Windows 95.
+It features:
+- Desktop icons that open draggable windows.
+- Nostalgic UI components powered by React95.
+- A secret Chess.exe app with a lightweight AI.
+
+Tech stack:
+- React + Vite + TypeScript
+- Zustand for window management
+- Styled-components for theme tweaks
+
+Planned enhancements:
+- More folders for case studies.
+- Rich HTML project pages.
+- Additional easter eggs hidden around the OS.
+
+Thanks for exploring! :)

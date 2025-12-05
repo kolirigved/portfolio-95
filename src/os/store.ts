@@ -49,13 +49,14 @@ export const useOSStore = create<OSState>((set, get) => ({
 
     const item = fileSystem[id];
     const isFullFile = item?.type === 'image' || item?.type === 'pdf' || item?.type === 'exe';
+    const isApp = item?.type === 'app';
 
     const newWindow: WindowState = {
       id,
-      x: isFullFile ? 140 + 2*offset : 50 + offset,
-      y: isFullFile ? 0 : 50 + offset,
-      width: isFullFile ? '55%' : 600,
-      height: isFullFile ? '100%' : 400,
+      x: isFullFile ? 140 + 2*offset : isApp ? 120 + offset : 50 + offset,
+      y: isFullFile ? 0 : isApp ? 80 + offset : 50 + offset,
+      width: isFullFile ? '55%' : isApp ? 740 : 600,
+      height: isFullFile ? '100%' : isApp ? 570 : 400,
       isMinimized: false,
       isMaximized: false,
       zIndex: highestZ + 1, 

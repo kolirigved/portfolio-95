@@ -6,6 +6,7 @@ import type { Item } from '../os/filesystem';
 import { DesktopIcon } from './DesktopIcon';
 import { useOSStore } from '../os/store';
 import { ScrollView } from 'react95';
+import ChessApp from './ChessApp';
 
 const FolderGrid = styled.div`
   display: flex;
@@ -127,6 +128,12 @@ export const WindowContentRenderer: React.FC<Props> = ({ item }) => {
           )}
         </div>
       );
+
+    case 'app':
+      if (item.appId === 'chess') {
+        return <ChessApp />;
+      }
+      return <div style={{ padding: 16 }}>Unknown application.</div>;
 
     default:
       return <div>Unknown File Type</div>;

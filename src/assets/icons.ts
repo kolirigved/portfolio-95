@@ -2,9 +2,10 @@
 
 // Using open-source Windows 98 icons
 const BASE_URL = 'https://win98icons.alexmeub.com/icons/png';
+const BASE_URL_2 = '/portfolio-95/icons';
 
 export const iconMap: Record<string, string> = {
-  computer: `${BASE_URL}/computer_explorer-4.png`,
+  computer: `${BASE_URL_2}/computer_explorer-4.png`,
   recycle_bin: `${BASE_URL}/recycle_bin_full-4.png`,
   recycle_full: `${BASE_URL}/recycle_bin_full-4.png`,
   folder: `${BASE_URL}/directory_closed-4.png`,
@@ -13,6 +14,7 @@ export const iconMap: Record<string, string> = {
   disk_drive: `${BASE_URL}/hard_disk_drive-3.png`,
   exe: `${BASE_URL}/shell_window5-0.png`,
   pdf: `${BASE_URL}/directory_open_file_mydocs-5.png`,
+  chess: `${BASE_URL}/shell_window5-0.png`,
   // Fallback
   unknown: `${BASE_URL}/file_lines-0.png`
 };

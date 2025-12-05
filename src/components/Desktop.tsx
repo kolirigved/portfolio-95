@@ -17,6 +17,9 @@ const DesktopContainer = styled.main`
   flex-wrap: wrap;
   align-content: flex-start;
   padding: 10px;
+  height: calc(100vh - 40px);
+  min-height: 0;
+  width: 100%;
 `;
 
 export const Desktop = () => {
