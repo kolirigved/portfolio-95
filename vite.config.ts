@@ -10,4 +10,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'), // Maps '@' to the src folder
     },
   },
+  base: '/portfolio-95/', // 👈 EXACTLY your GitHub repo name, with slashes
 })

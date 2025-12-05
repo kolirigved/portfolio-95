@@ -26,11 +26,17 @@ export const Taskbar = () => {
   const { windows, activeWindowId, focusWindow, minimizeWindow } = useOSStore();
 
   const handleTaskClick = (id: string) => {
-    // If the clicked window is already active, minimize it.
-    if (activeWindowId === id) {
+    // 1. Find the window object to check its status
+    const win = windows.find((w) => w.id === id);
+    if (!win) return;
+
+    // 2. Logic:
+    // If it is currently active AND visible (not minimized), then minimize it.
+    if (activeWindowId === id && !win.isMinimized) {
       minimizeWindow(id);
     } else {
-      // Otherwise, bring it to front/restore it
+      // In all other cases (minimized OR in background), bring it to front.
+      // NOTE: This relies on the fix we made to focusWindow() to set isMinimized: false
       focusWindow(id);
     }
   };
@@ -42,14 +48,14 @@ export const Taskbar = () => {
         <StartMenuWrapper>
           <MenuList onClick={() => setStartMenuOpen(false)}>
             <MenuListItem>
-              <span role="img" aria-label="programs">📁</span> Programs
+              <span role="img" aria-label="programs"></span> Programs
             </MenuListItem>
             <MenuListItem>
-              <span role="img" aria-label="settings">⚙️</span> Settings
+              <span role="img" aria-label="settings"></span> Settings
             </MenuListItem>
             <Separator />
             <MenuListItem disabled>
-              <span role="img" aria-label="shutdown">🛑</span> Shut Down...
+              <span role="img" aria-label="shutdown"></span> Shut Down...
             </MenuListItem>
           </MenuList>
         </StartMenuWrapper>

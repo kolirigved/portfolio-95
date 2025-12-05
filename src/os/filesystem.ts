@@ -1,6 +1,6 @@
 // src/os/filesystem.ts
 
-export type FileType = 'folder' | 'txt' | 'image' | 'exe';
+export type FileType = 'folder' | 'txt' | 'image' | 'exe' | 'pdf';
 
 export interface Item {
   id: string;
@@ -9,6 +9,7 @@ export interface Item {
   type: FileType;
   content?: string;
   src?: string;
+  download?: string;
   children?: string[];
 }
 
@@ -18,7 +19,7 @@ export const fileSystem: Record<string, Item> = {
     title: 'Desktop',
     type: 'folder',
     icon: 'computer',
-    children: ['my_computer', 'recycle_bin', 'about_me', 'projects'] 
+    children: ['my_computer', 'recycle_bin', 'about_me', 'projects', 'portfolio_page', 'resume_pdf'] 
   },
   'my_computer': {
     id: 'my_computer',
@@ -61,5 +62,20 @@ export const fileSystem: Record<string, Item> = {
     type: 'txt',
     icon: 'notepad',
     content: "This represents the project you are building right now."
+  },
+  'portfolio_page': {
+    id: 'portfolio_page',
+    title: 'Portfolio Page',
+    type: 'exe',
+    icon: 'exe',
+    src: '/portfolio-95/files/portfolio.html' // Place your HTML at public/files/portfolio.html
+  },
+  'resume_pdf': {
+    id: 'resume_pdf',
+    title: 'Resume.pdf',
+    type: 'pdf',
+    icon: 'pdf',
+    src: 'https://drive.google.com/file/d/1xd31v8XpVXb8iaIsaC03Y5oZ86_wwcWZ/preview',
+    download: 'https://drive.google.com/uc?export=download&id=1xd31v8XpVXb8iaIsaC03Y5oZ86_wwcWZ'
   }
 };

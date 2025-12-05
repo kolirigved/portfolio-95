@@ -3,6 +3,7 @@ import { Rnd } from 'react-rnd';
 import { Window, WindowHeader, WindowContent, Button, ScrollView} from 'react95';
 import styled from 'styled-components';
 import { useOSStore } from '../os/store';
+import { fileSystem } from '../os/filesystem';
 import { getIcon } from '../assets/icons';
 
 // Styled Components for Layout
@@ -46,7 +47,8 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
     minimizeWindow, 
     toggleMaximize, 
     updateWindowPos,
-    updateWindowSize
+    updateWindowSize,
+    restoreWindow // Import the restoreWindow action
   } = useOSStore();
   
   const windowState = windows.find((w) => w.id === id);
@@ -54,7 +56,14 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
 
   // Handle Visibility (Hidden if minimized)
   if (windowState.isMinimized) {
-    return <div style={{ display: 'none' }} />;
+    return (
+      <div
+        style={{
+          display: 'none',
+        }}
+        onClick={() => restoreWindow(id)} // Ensure restore logic is triggered when clicked
+      />
+    );
   }
 
   // Handle Maximize Logic
@@ -63,7 +72,9 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
   // If maximized, we override position/size to fill the 'Desktop' area
   // (We assume roughly 40px for taskbar at bottom)
   const position = isMaximized ? { x: 0, y: 0 } : { x: windowState.x, y: windowState.y };
-  const size = isMaximized ? { width: '100%', height: 'calc(100vh - 40px)' } : { width: windowState.width, height: windowState.height };
+  const size = isMaximized
+    ? { width: '100%', height: '100%' } // Scale both X and Y when maximized
+    : { width: windowState.width, height: windowState.height };
 
   return (
     <Rnd
@@ -87,7 +98,7 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
       minWidth={250}
       minHeight={150}
       bounds="parent"
-      dragHandleClassName="window-header" 
+      dragHandleClassName="window-header"
     >
       <Window style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }} className="window">
         
@@ -132,11 +143,59 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({ id, title, icon, child
         </WindowHeader>
 
         {/* 2. MENU BAR (File, Edit, View) */}
-        <MenuBar style={{ height: '24px', padding: '0 4px' }}>
+        <MenuBar style={{ height: '24px', padding: '0 4px', display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
             <MenuItem><u>F</u>ile</MenuItem>
             <MenuItem><u>E</u>dit</MenuItem>
             <MenuItem><u>V</u>iew</MenuItem>
             <MenuItem><u>H</u>elp</MenuItem>
+          </div>
+
+          {/* Right-side toolbar actions (Open in new tab for HTML/PDF/EXE) */}
+          {(() => {
+            const item = fileSystem[id];
+            if (!item) return null;
+            const hasExternal = !!item.src;
+            const actionable = ['pdf', 'exe', 'html'];
+            if (hasExternal && actionable.includes(item.type)) {
+              return (
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {/* Open in new tab button (for html/pdf/exe) */}
+                  <Button
+                    size="sm"
+                    title="Open in New Tab"
+                    aria-label="Open in new tab"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (item.src) window.open(item.src, '_blank');
+                    }}
+                    style={{ height: '20px', padding: '0 6px', fontSize: 12, outline: 'none', boxShadow: 'none' }}
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
+                    Open in New Tab
+                  </Button>
+
+                  {/* For PDFs, show a Download button (uses item.download if present, falls back to src) */}
+                  {item.type === 'pdf' && (
+                    <Button
+                      size="sm"
+                      title="Download PDF"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = item.download || item.src;
+                        if (url) window.open(url, '_blank');
+                      }}
+                      style={{ height: '20px', padding: '0 6px', fontSize: 12, outline: 'none', boxShadow: 'none' }}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      Download
+                    </Button>
+                  )}
+                </div>
+              );
+            }
+            return null;
+          })()}
         </MenuBar>
 
         {/* 3. CONTENT AREA */}

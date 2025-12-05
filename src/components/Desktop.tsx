@@ -44,15 +44,15 @@ export const Desktop = () => {
       {/* Layer 2: Windows */}
       {windows.map((win) => {
         const item = fileSystem[win.id];
-        
+
         // Safety check in case a window is open for a deleted file
-        if(!item) return null;
+        if (!item) return null;
 
         return (
-          <WindowFrame 
-            key={win.id} 
-            id={win.id} 
-            title={item.title} 
+          <WindowFrame
+            key={win.id}
+            id={win.id}
+            title={item.title}
             icon={item.icon}
           >
             {/* The new renderer handles folders, text, images, etc. */}

@@ -19,8 +19,8 @@ const Wrapper = styled.div`
 
 // CHANGED: This is now an img tag
 const StyledImg = styled.img`
-  width: 42px;
-  height: 42px;
+  width: 50px;
+  height: 50px;
   margin-bottom: 4px;
   image-rendering: pixelated; /* Keeps it crisp */
 `;
@@ -28,7 +28,7 @@ const StyledImg = styled.img`
 const IconLabel = styled.span`
   color: white;
   text-shadow: 1px 1px 1px #000;
-  font-size: 13px; /* Slightly smaller text */
+  font-size: 14.5px; /* Slightly smaller text */
   padding: 1px 2px;
   
   ${Wrapper}:focus & {

@@ -1,12 +1,13 @@
 // src/os/store.ts
 import { create } from 'zustand';
+import { fileSystem } from './filesystem';
 
 interface WindowState {
   id: string;     // Matches the fileSystem ID
   x: number;      // Position X
   y: number;      // Position Y
-  width: number;
-  height: number;
+  width: number | string;
+  height: number | string;
   isMinimized: boolean;
   isMaximized: boolean;
   zIndex: number; // Critical for ensuring the active window is on top
@@ -37,25 +38,27 @@ export const useOSStore = create<OSState>((set, get) => ({
     // 1. Check if window is already open
     const existing = windows.find(w => w.id === id);
     if (existing) {
-        // ... (existing restore logic remains same) ...
+        // If it exists, just focus it (which now un-minimizes it thanks to the fix above)
         focusWindow(id);
         return;
     }
 
-    // 2. CRITICAL FIX: Calculate the true highest Z-index
+    // 2. Creation Logic (Keep your existing Z-index calc here)
     const highestZ = Math.max(0, ...windows.map(w => w.zIndex));
-
     const offset = windows.length * 20; 
-    
+
+    const item = fileSystem[id];
+    const isFullFile = item?.type === 'image' || item?.type === 'pdf' || item?.type === 'exe';
+
     const newWindow: WindowState = {
       id,
-      x: 50 + offset, // Moved strictly to 50 to see it better
-      y: 50 + offset,
-      width: 400,
-      height: 300,
+      x: isFullFile ? 140 + 2*offset : 50 + offset,
+      y: isFullFile ? 0 : 50 + offset,
+      width: isFullFile ? '55%' : 600,
+      height: isFullFile ? '100%' : 400,
       isMinimized: false,
       isMaximized: false,
-      zIndex: highestZ + 1, // FIX: Always puts new window on top
+      zIndex: highestZ + 1, 
     };
 
     set((state) => ({
@@ -75,12 +78,15 @@ export const useOSStore = create<OSState>((set, get) => ({
     )
   })),
 
-  restoreWindow: (id) => set((state) => ({
-     windows: state.windows.map((w) => 
-       w.id === id ? { ...w, isMinimized: false } : w
-     ),
-     activeWindowId: id // also focus it
-   })),
+  restoreWindow: (id) => set((state) => {
+    const highestZ = Math.max(0, ...state.windows.map((w) => w.zIndex));
+    return {
+      windows: state.windows.map((w) => 
+        w.id === id ? { ...w, isMinimized: false, zIndex: highestZ + 1 } : w
+      ),
+      activeWindowId: id, // Focus the restored window
+    };
+  }),
 
   toggleMaximize: (id) => set((state) => ({
     windows: state.windows.map((w) => 
@@ -90,10 +96,13 @@ export const useOSStore = create<OSState>((set, get) => ({
 
   focusWindow: (id) => set((state) => {
     const highestZ = Math.max(0, ...state.windows.map(w => w.zIndex));
+    
     return {
       activeWindowId: id,
       windows: state.windows.map((w) => 
-        w.id === id ? { ...w, zIndex: highestZ + 1 } : w
+        w.id === id 
+          ? { ...w, zIndex: highestZ + 1, isMinimized: false } // <--- FIX: Added isMinimized: false
+          : w
       ),
     };
   }),

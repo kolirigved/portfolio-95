@@ -5,6 +5,7 @@ import {fileSystem } from '../os/filesystem';
 import type { Item } from '../os/filesystem';
 import { DesktopIcon } from './DesktopIcon';
 import { useOSStore } from '../os/store';
+import { ScrollView } from 'react95';
 
 const FolderGrid = styled.div`
   display: flex;
@@ -26,6 +27,20 @@ const TextBuffer = styled.div`
   user-select: text; /* Allow users to copy your text */
 `;
 
+const HtmlBuffer = styled.div`
+  background: white;
+  min-height: 100%;
+  width: 100%;
+  overflow: auto;
+  color: #000;
+`;
+
+const ScrollableContainer = styled(ScrollView)`
+  height: 100%;
+  width: 100%;
+  background: white;
+`;
+
 interface Props {
   item: Item;
 }
@@ -45,26 +60,32 @@ export const WindowContentRenderer: React.FC<Props> = ({ item }) => {
       }
 
       return (
-        <FolderGrid>
-          {childIds.map((childId) => {
-            const childItem = fileSystem[childId];
-            if (!childItem) return null; // Safety check
+        <ScrollableContainer>
+          <FolderGrid>
+            {childIds.map((childId) => {
+              const childItem = fileSystem[childId];
+              if (!childItem) return null; // Safety check
 
-            return (
-              <DesktopIcon
-                key={childId}
-                label={childItem.title}
-                iconName={childItem.icon}
-                // Double clicking an icon inside a window opens that new item
-                onDoubleClick={() => openWindow(childId)}
-              />
-            );
-          })}
-        </FolderGrid>
+              return (
+                <DesktopIcon
+                  key={childId}
+                  label={childItem.title}
+                  iconName={childItem.icon}
+                  // Double clicking an icon inside a window opens that new item
+                  onDoubleClick={() => openWindow(childId)}
+                />
+              );
+            })}
+          </FolderGrid>
+        </ScrollableContainer>
       );
 
     case 'txt':
-      return <TextBuffer>{item.content}</TextBuffer>;
+      return (
+        <ScrollableContainer>
+          <TextBuffer>{item.content}</TextBuffer>
+        </ScrollableContainer>
+      );
 
     case 'image':
       return (
@@ -74,6 +95,36 @@ export const WindowContentRenderer: React.FC<Props> = ({ item }) => {
                 alt={item.title} 
                 style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
             />
+        </div>
+      );
+
+      case 'exe':
+        return (
+          <div style={{ height: '100%', width: '100%', background: 'white' }}>
+            {item.src ? (
+              <iframe
+                title={item.title}
+                src={item.src}
+                style={{ border: 'none', width: '100%', height: '100%' }}
+              />
+            ) : (
+              <HtmlBuffer dangerouslySetInnerHTML={{ __html: item.content || '<p>No content</p>' }} />
+            )}
+          </div>
+        );
+        
+    case 'pdf':
+      return (
+        <div style={{ height: '100%', width: '100%', background: '#c0c0c0' }}>
+          {item.src ? (
+            <iframe
+              title={item.title}
+              src={item.src}
+              style={{ border: 'none', width: '100%', height: '100%' }}
+            />
+          ) : (
+            <div style={{ padding: 16 }}>No PDF source provided.</div>
+          )}
         </div>
       );
 
